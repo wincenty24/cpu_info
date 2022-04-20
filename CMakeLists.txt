@@ -24,7 +24,7 @@ add_executable(run_ut test/main.cpp test/ut_reader.cpp)
 target_compile_options(run_ut PUBLIC -lgtest -lgtest_main)
 target_link_libraries(run_ut ${GTEST_LIBRARIES}  pthread reader)
 
-add_executable(release_app zad.c)
+add_executable(release_app main.c)
 
 target_link_libraries(release_app reader)
 
