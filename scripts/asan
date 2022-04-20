@@ -1,0 +1,7 @@
+#!/bin/bash
+
+rm -rf build && mkdir build && cd build
+
+cmake .. -DOPTIMIZE="Release"
+make run_ut
+valgrind --leak-check=full ./run_ut
