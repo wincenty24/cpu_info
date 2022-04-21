@@ -16,17 +16,21 @@ endif()
 
 
 add_library(reader STATIC  lib/reader.c)
+add_library(analyzer STATIC  lib/analyzer.c)
+add_library(cleaner STATIC  lib/cleaner.c)
+
+
 
 #uteki
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 add_executable(run_ut test/main.cpp test/ut_reader.cpp)
 target_compile_options(run_ut PUBLIC -lgtest -lgtest_main)
-target_link_libraries(run_ut ${GTEST_LIBRARIES}  pthread reader)
+target_link_libraries(run_ut ${GTEST_LIBRARIES}  pthread reader analyzer)
 
 add_executable(release_app main.c)
 
-target_link_libraries(release_app reader)
+target_link_libraries(release_app reader analyzer cleaner)
 
 
 
