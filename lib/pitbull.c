@@ -12,7 +12,6 @@
 watchdog_t watchdog_ref = {0};
 watchdog_t watchdog_val = {0};
 
-volatile sig_atomic_t done = 0;
 const watchdog_t watchdog_zero = {0};
 
 bool compare_values(int32_t a, int32_t b){
@@ -29,18 +28,11 @@ void set_zero(watchdog_t* des1, watchdog_t* des2, watchdog_t* ref)
     des1 = ref;
     des2 = ref;
 }
-void term(int signum)
-{
-   printf("Caught!\n");
-   done = 1;
-}
+
 void* waruj()
 {
-    struct sigaction action;
-    memset(&action, 0, sizeof(action));
-    action.sa_handler = term;
-    sigaction(SIGTERM, &action, NULL);
-    while (true)
+
+    while (!done)
     {
 
         //int t = sleep(1);

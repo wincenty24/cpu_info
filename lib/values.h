@@ -1,6 +1,9 @@
 #ifndef VALUES_H
 #define VALUES_H
 
+#include <unistd.h>
+#include <signal.h>
+
 #include "stdint.h"
 
 #define max_size_of_line 1024
@@ -8,6 +11,8 @@
 
 //global
 uint32_t n_cpus;
+
+volatile sig_atomic_t done;
 
 typedef struct pre_cpu_info_t{
     char pre_cpu_str[max_size_of_line];

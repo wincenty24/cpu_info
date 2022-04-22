@@ -8,6 +8,9 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <time.h>
+#include <unistd.h>
+#include <signal.h>
+
 
 #include "lib/values.h"
 #include "lib/reader.h"
@@ -16,17 +19,34 @@
 #include "lib/pitbull.h"
 
 
+void free_memory(){
+
+    pthread_exit(NULL);
+    free(pre_ci);
+    free(post_ci);
+    free(saved_cpu_info);
+    free(cpu_info);
+}
+
+void stoper(int signum)
+{
+   done = 1;
+   free_memory();
+}
+
+
 bool is_prepared_read = false;
 bool is_prepared_anal = false;
 bool is_prepared_printf = true;
 
 void print_cpu(cpu_info_t* cpu_info, int32_t n_cpu){
     int idx;
+    printf("\r ");
     for(idx =0; idx < n_cpu; idx++){
         printf("cpu%d %f   ", idx, cpu_info->cpu_usage);
         cpu_info++;
     }
-    printf("\n");
+    fflush(stdout);//kill 12233
 }
 
 
@@ -34,7 +54,7 @@ void *printer_thr_fun(void* n_cpu_ptr)
 {
 
     int32_t n_cpu = *(int32_t*)n_cpu_ptr;
-    while (true)
+    while (!done)
     {
         if(is_prepared_anal){
             print_cpu(cpu_info, n_cpu);
@@ -50,7 +70,7 @@ void *printer_thr_fun(void* n_cpu_ptr)
 void *analyzer_thr_fun(void* n_cpu_ptr)
 {
     int32_t n_cpu = *(int32_t*)n_cpu_ptr;
-    while (true)
+    while (!done)
     {
         if(is_prepared_read)
         {
@@ -66,7 +86,7 @@ void *analyzer_thr_fun(void* n_cpu_ptr)
 void *reader_thr_fun(void* n_cpu_ptr)
 {
     int32_t n_cpu = *(int32_t*)n_cpu_ptr;
-    while (true)
+    while (!done)
     {
         if(is_prepared_printf){
             read_stat(pre_ci, n_cpu, "/proc/stat");
@@ -80,6 +100,20 @@ void *reader_thr_fun(void* n_cpu_ptr)
 }
 
 int main(int argc, char **argv) {
+    
+    
+    system("clear");
+    done = 0;
+
+    struct sigaction action;
+    memset(&action, 0, sizeof(action));
+    action.sa_handler = stoper;
+    sigaction(SIGTERM, &action, NULL);
+    
+    int pid = getpid();
+    int parentID = getppid();
+
+    printf("PID is %d  and Parent is %d \n",pid, parentID);
 
     n_cpus = get_nprocs() + 1;
 
@@ -101,12 +135,8 @@ int main(int argc, char **argv) {
     pthread_create(&printer_thr, NULL, printer_thr_fun, (void*)&n_cpus);
     pthread_create(&watchdog_thr, NULL, waruj, NULL);
 
-    pthread_exit(NULL);
+    free_memory();
 
-    free(pre_ci);
-    free(post_ci);
-    free(saved_cpu_info);
-    free(cpu_info);
     return 0;    
-    
+    //kill 10405
 }
