@@ -7,6 +7,7 @@
 void put(int32_t idx, char* input, post_cpu_info_t* post_ci){    
     if(idx > 0){
         uint64_t transformed_val = atoi(input);
+        //uint64_t* ptr[10] = {post_ci->user};
         switch (idx)
         {
         case 1:
@@ -88,7 +89,6 @@ void pre_process(pre_cpu_info_t* pre_ci, post_cpu_info_t* post_ci, post_cpu_info
         float cpu_usage = calculate_cpu_usage(post_ci, saved_cpu_info);
         cpu_info->cpu_usage = cpu_usage;
         save(post_ci, saved_cpu_info);
-
         pre_ci++;
         post_ci++;
         saved_cpu_info++;

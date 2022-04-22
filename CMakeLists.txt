@@ -18,6 +18,9 @@ endif()
 add_library(reader STATIC  lib/reader.c)
 add_library(analyzer STATIC  lib/analyzer.c)
 add_library(cleaner STATIC  lib/cleaner.c)
+add_library(threads STATIC  lib/threads.c)
+add_library(pitbull STATIC  lib/pitbull.c)
+
 
 
 
@@ -29,8 +32,8 @@ target_compile_options(run_ut PUBLIC -lgtest -lgtest_main)
 target_link_libraries(run_ut ${GTEST_LIBRARIES}  pthread reader analyzer)
 
 add_executable(release_app main.c)
-
-target_link_libraries(release_app reader analyzer cleaner)
+target_compile_options(release_app PUBLIC -lpthread)
+target_link_libraries(release_app reader analyzer cleaner pitbull pthread) 
 
 
 

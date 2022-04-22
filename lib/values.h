@@ -9,9 +9,6 @@
 //global
 uint32_t n_cpus;
 
-//post_cpu_info_t saved_cpu_info = {0};
-
-
 typedef struct pre_cpu_info_t{
     char pre_cpu_str[max_size_of_line];
     int32_t siezof_line;
@@ -36,4 +33,17 @@ typedef struct cpu_info_t
     float cpu_usage;
 }cpu_info_t;
 
+ pre_cpu_info_t* pre_ci;
+ post_cpu_info_t* post_ci;
+ post_cpu_info_t* saved_cpu_info;
+ cpu_info_t* cpu_info;
+
+typedef struct watchdog_t
+{
+    int32_t read;
+    int32_t analyzer;
+    int32_t printer;
+}watchdog_t;
+
+ 
 #endif
