@@ -1,6 +1,5 @@
 #ifndef CLEANER_H
 #define CLEANER_H
-#include <sys/types.h>
 
 #include "values.h"
 

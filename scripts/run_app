@@ -2,6 +2,6 @@
 
 rm -rf build && mkdir build && cd build
 
-cmake .. -DOPTIMIZE="Debug"
-make release_app
-./release_app
+cmake .. -DOPTIMIZE="Release"
+make cpu_info_app
+./cpu_info_app

@@ -19,6 +19,7 @@ typedef struct pre_cpu_info_t{
     int32_t siezof_line;
 } pre_cpu_info_t;
 
+
 typedef struct post_cpu_info_t
 {
     uint64_t user;
@@ -50,5 +51,4 @@ typedef struct watchdog_t
     int32_t printer;
 }watchdog_t;
 
- 
 #endif

@@ -1,13 +1,11 @@
 #include <gtest/gtest.h>
-#include "stdint.h"
 
 extern "C"
 {
-#include "../lib/values.h"
 #include "../lib/reader.h"
 }
 
-void prepare_ref(pre_cpu_info_t* pci, int32_t* sizeof_line){
+void prepare_ref_test(pre_cpu_info_t* pci, int32_t* sizeof_line){
     strncpy(pci->pre_cpu_str, "cpu  2755122 14745 784029 25734029 25009 0 329582 0 0 0\n", sizeof_line[0]);
     pci++;
     strncpy(pci->pre_cpu_str, "cpu0 334925 2902 105896 5789041 5595 0 132040 0 0 0\n", sizeof_line[1]);
@@ -26,19 +24,19 @@ void prepare_ref(pre_cpu_info_t* pci, int32_t* sizeof_line){
     pci++;   
     strncpy(pci->pre_cpu_str, "cpu7 343178 1728 104350 2854533 2767 0 5690 0 0 0\n", sizeof_line[8]);    
 }
-void compare_char(char* a, char* b, int32_t sizeof_line){
+void compare_char_test(char* a, char* b, int32_t sizeof_line){
     int32_t are_eq = strncmp(a, b, sizeof_line);
     ASSERT_FALSE(are_eq);
 }
 
-void compare_pre_cpu_info_t(pre_cpu_info_t* pci, pre_cpu_info_t* pci_ref, int32_t n_pre_cpu_info_t, int32_t* sizeof_line){
+void compare_pre_cpu_info_t_test(pre_cpu_info_t* pci, pre_cpu_info_t* pci_ref, int32_t n_pre_cpu_info_t, int32_t* sizeof_line){
     for(int32_t i =0; i < n_pre_cpu_info_t; i++){
-        compare_char(pci_ref->pre_cpu_str, pci->pre_cpu_str, sizeof_line[i]);
+        compare_char_test(pci_ref->pre_cpu_str, pci->pre_cpu_str, sizeof_line[i]);
         pci++;
         pci_ref++;
     }
 }
-TEST(READER,read_stat ){
+TEST(READER, read_stat_test){
     const int32_t nproc = 9;
     int32_t sizeof_line[9] = {56, 52, 51, 50, 50, 50, 48, 49, 50};
     pre_cpu_info_t* pci = (pre_cpu_info_t*)malloc(sizeof(pre_cpu_info_t) * nproc);
@@ -46,8 +44,8 @@ TEST(READER,read_stat ){
     char file_name[] = "../test/proc_info.txt";
     
     read_stat(pci, nproc, file_name);
-    prepare_ref(pci_ref, sizeof_line);
-    compare_pre_cpu_info_t(pci, pci_ref, nproc, sizeof_line);
+    prepare_ref_test(pci_ref, sizeof_line);
+    compare_pre_cpu_info_t_test(pci, pci_ref, nproc, sizeof_line);
     
     free(pci);
     free(pci_ref);

@@ -1,7 +1,7 @@
-#include <sys/types.h>
 #include <string.h>
 
-#include "values.h"
+#include "cleaner.h"
+//#include "values.h"
 
 void reset_post_cpu_info_t(post_cpu_info_t* pci, int32_t n_cpu)
 {

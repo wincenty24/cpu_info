@@ -1,10 +1,8 @@
 
-#include <stdio.h>
-#include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
 
-#include "values.h"
+//#include "values.h"
 #include "reader.h"
 #include "cleaner.h"
 

@@ -1,9 +1,12 @@
-#include "reader.h"
-#include "values.h"
+//#include "reader.h"
+//#include "values.h"
 
 #include <string.h>
 #include <stdlib.h>
 
+#include "analyzer.h"
+
+int dupa =10;
 void put(int32_t idx, char* input, post_cpu_info_t* post_ci){    
     if(idx > 0){
         uint64_t transformed_val = atoi(input);

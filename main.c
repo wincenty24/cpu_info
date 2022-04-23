@@ -11,33 +11,25 @@
 #include <unistd.h>
 #include <signal.h>
 
-
-#include "lib/values.h"
 #include "lib/reader.h"
 #include "lib/analyzer.h"
 #include "lib/cleaner.h"
 #include "lib/pitbull.h"
+#include "lib/values.h"
+#include "lib/threads.h"
 
-
-void free_memory(){
-
-    pthread_exit(NULL);
-    free(pre_ci);
-    free(post_ci);
-    free(saved_cpu_info);
-    free(cpu_info);
-}
-
-void stoper(int signum)
-{
-   done = 1;
-   free_memory();
-}
 
 
 bool is_prepared_read = false;
 bool is_prepared_anal = false;
 bool is_prepared_printf = true;
+
+void stoper()
+{
+   done = 1;
+   free_memory(pre_ci, post_ci, saved_cpu_info, cpu_info);
+   exit(0);
+}
 
 void print_cpu(cpu_info_t* cpu_info, int32_t n_cpu){
     int idx;
@@ -46,7 +38,7 @@ void print_cpu(cpu_info_t* cpu_info, int32_t n_cpu){
         printf("cpu%d %f   ", idx, cpu_info->cpu_usage);
         cpu_info++;
     }
-    fflush(stdout);//kill 12233
+    fflush(stdout);
 }
 
 
@@ -79,15 +71,18 @@ void *analyzer_thr_fun(void* n_cpu_ptr)
             is_prepared_read = false;
             is_prepared_anal = true;
         }
+    
         usleep(1000);
     }
 }
 
 void *reader_thr_fun(void* n_cpu_ptr)
 {
+    
     int32_t n_cpu = *(int32_t*)n_cpu_ptr;
     while (!done)
     {
+
         if(is_prepared_printf){
             read_stat(pre_ci, n_cpu, "/proc/stat");
             watchdog_val.read++;
@@ -95,28 +90,32 @@ void *reader_thr_fun(void* n_cpu_ptr)
             is_prepared_printf = false;
             is_prepared_read = true;
         }
+       
         usleep(1000);
+        
     }
 }
+void setup(int32_t arg, char* name){
+    int32_t result = system("clear");
+    if(result == -1){
+        printf("cleaning error");
+    }
+    set_zero(&watchdog_ref, &watchdog_val);
 
-int main(int argc, char **argv) {
-    
-    
-    system("clear");
     done = 0;
-
+	printf("%d program's name is: %s\n",arg, name);
     struct sigaction action;
     memset(&action, 0, sizeof(action));
     action.sa_handler = stoper;
     sigaction(SIGTERM, &action, NULL);
     
-    int pid = getpid();
-    int parentID = getppid();
-
-    printf("PID is %d  and Parent is %d \n",pid, parentID);
-
+    int32_t pid = getpid();
+    printf("PID %d \n", pid);
     n_cpus = get_nprocs() + 1;
-
+}
+int main(int argc, char **argv) {
+    
+    setup(argc, argv[0]);
     pre_ci = (pre_cpu_info_t*)malloc(sizeof(pre_cpu_info_t) * n_cpus);
     post_ci = (post_cpu_info_t*)malloc(sizeof(post_cpu_info_t) * n_cpus);
     saved_cpu_info = (post_cpu_info_t*)malloc(sizeof(post_cpu_info_t) * n_cpus);
@@ -134,9 +133,10 @@ int main(int argc, char **argv) {
     pthread_create(&analyzer_thr, NULL, analyzer_thr_fun, (void*)&n_cpus);
     pthread_create(&printer_thr, NULL, printer_thr_fun, (void*)&n_cpus);
     pthread_create(&watchdog_thr, NULL, waruj, NULL);
+    pthread_exit(NULL);
 
-    free_memory();
+   
+    free_memory(pre_ci, post_ci, saved_cpu_info, cpu_info);
 
     return 0;    
-    //kill 10405
 }
